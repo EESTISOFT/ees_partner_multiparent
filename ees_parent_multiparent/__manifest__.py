@@ -5,7 +5,7 @@
     'summary': "This module adds multiple parents to partner",
     'version': '12.0.1',
     'author': 'EESTISOFT, ' 'Hideki Yamamoto',
-    'license': "AGPL-3",
+    'license': "LGPL-3",
     'maintainer': 'EESTISOFT, ''Hideki Yamamoto',
     'category': 'productivity',
     'website': "http://www.eestisoft.com",
