@@ -1,8 +1,8 @@
 .. image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
-    :alt: License: AGPL-3
+    :alt: License: LGPL-3
 ===========================================================
-HAY multiparent - By Hideki Andrea Yamamoto
+EESTISOFT multiparent - By EESTISOFT Hideki Yamamoto
 ===========================================================
 
 Description
@@ -18,12 +18,5 @@ Contributors
 * Hideki Yamamoto <hideki.yamamoto@gmail.com>
 
 Maintainer
-----------
-.. image:: https://officinetesla.it/img/ou-ot.png
-   :target: http://officinetesla.it
-   :width: 390px
-   :align: center
-   :height: 200px
-   :alt: Officine Tesla
    
-This module is maintained by Hideki Andrea Yamamoto.
+This module is maintained by EESTISOFT - Hideki Yamamoto.
