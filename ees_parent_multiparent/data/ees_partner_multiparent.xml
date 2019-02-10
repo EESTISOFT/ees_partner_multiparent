@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<record id="ees_multiparent.partner_form" model="ir.ui.view">
+	<field name="name">ees_multiparent.partner_form</field>
+	<field name="model">res.partner</field>
+	<field name="priority">2</field>
+	<field name="inherit_id" ref="base.view_partner_form"/>
+	<field name="arch" type="xml">
+		<!--
+		<field name="child_ids" position="attributes">
+			<attribute name="domain">[('type','!=','contact')]</attribute>
+		</field>-->
+		<xpath expr="//page[contains(@autofocus,'autofocus')]" position="replace" />
+		
+		<xpath expr="/form/sheet/notebook/page[1]" position="before">
+<!--<field name="previous_phone" invisible="1"/><field name="previous_email" invisible="1"/>-->
+<page name="multiparents_page" string="Companies" attrs="{'invisible': [('is_company','=', True)]}">
+<div><button onclick="OBSTOGGLE()">Mostra / Nascondi Relazioni obsolete</button>
+	<style>
+		.obshidden{display:none !important}
+	</style>
+	<script>
+		window.OBSTOGGLE=function(){
+			var ee=document.querySelectorAll('.obsolete');
+			for(var e=0;e!=ee.length;e++){ee[e].classList.toggle('obshidden')}
+		}
+	</script>
+	</div>
+	<field name="multiparents" mode="kanban" context="{'default_child': active_id}">
+		<kanban><field name="mailing" /><field name="auth" />
+		<field name="parent"/><field name="child"/><field name="parent_name"/><field name="email"/><field name="role"/><field name="phone"/><field name="obsolete"/>
+		<templates><t t-name="kanban-box"><div t-attf-style="{{record.obsolete.raw_value==1 ? 'background-color:#cccccc':'background-color:#fcfcfc'}}"
+		 t-attf-class="{{record.obsolete.raw_value==1 ? 'oe_kanban_global_click o_res_partner_kanban oe_kanban_card oe_kanban_card_fancy obsolete obshidden':'oe_kanban_global_click o_res_partner_kanban oe_kanban_card oe_kanban_card_fancy current'}}" >
+		<a t-if="!read_only_mode" type="delete" class="fa fa-times pull-right" />
+		<a t-if="!read_only_mode" type="object" name="toggleobsolete" class="fa fa-clock-o pull-right"/>		
+		<a type="object" name="togglemailing" class="fa fa-envelope pull-right" attrs="{'invisible':[('mailing','!=', False)]}"/>
+		<a type="object" name="togglemailing" class="fa fa-envelope-open pull-right" attrs="{'invisible':[('mailing','!=', True)]}"/>
+			<div class="oe_kanban_details"><field name="parent" invisible="1"/>
+				<strong class="o_kanban_record_title oe_partner_heading"><a t-att-HREF="'../web#action=103&amp;view_type=form&amp;model=res.partner&amp;id='+record.parent.raw_value"><field name="parent_name"/></a></strong>
+				<div class="o_kanban_tags_section oe_kanban_partner_categories"/>
+				<ul>
+					<li t-if="record.parent.raw_value and record.role.raw_value"><field name="role"/></li>
+					<li t-if="record.phone.raw_value" class="o_text_overflow"><field name="phone"/></li>
+					<li t-if="record.email.raw_value" class="o_text_overflow"><field name="email" widget="email"/></li>
+				</ul>
+			</div><div style="float:right;background-color:#e06666" class="badge" t-if="record.parent.user_id">
+			<span t-esc="user_id" class="o_badge_text" style="padding: 1px 5px;"/></div><div class="oe_kanban_bottom_right">
+		
+		<!--<a t-if="!read_only_mode and record.obsolete.raw_value==0" type="object" name="copy_from_child" help="copy data from contact" class="fa fa-user-circle pull-right" />-->
+		<a t-if="!read_only_mode and record.obsolete.raw_value==0" type="object" name="copy_from_parent" help="copy data from company" class="fa fa-building pull-right" />
+		<a t-if="record.parent.user_id"><span t-esc="record.parent.user_id"/></a>
+		</div></div></t></templates></kanban>
+<form><field name="id" invisible="1"/><field name="child" invisible="1"/><field name="parent_name" invisible="1"/><field name="child_name" invisible="1"/><field name="obsolete" invisible="1"/>
+	<group col="3">
+	<field name="parent" placeholder="company" attrs="{'readonly': [('id','>',0)]}" help="Company"/>				
+	<field name="role"  placeholder="role"/><br/>
+	<field name="email" placeholder="email"/>
+	<field name="phone" placeholder="phone"/>
+	<field name="address" nolabel="1" placeholder="address"/>
+	<field name="mailing"/>
+	<field name="auth" />
+	</group>
+</form>
+		<tree editable="top" no_open="true">
+			<field name="parent" attrs="{'readonly': [('id','>',0)]}"/><field name="role"/><field name="email" widget="email"/><field name="phone"/><field name="obsolete" string="Attiva"/>
+			<button name="copy_from_parent" string="&lt;&lt;" type="object" class="btn-primary" help="Copy mail and phone from the company"/>
+		</tree>
+</field></page>
+<page name="multichild_page" string="Contacts" attrs="{'invisible': [('is_company','!=', True)]}">
+	<div><button onclick="OBSTOGGLE()">Mostra / Nascondi Relazioni obsolete</button>
+	<style>
+		.obshidden{display:none !important}
+	</style>
+	<script>
+		window.OBSTOGGLE=function(){
+			var ee=document.querySelectorAll('.obsolete');
+			for(var e=0;e!=ee.length;e++){ee[e].classList.toggle('obshidden')}
+		}
+	</script>
+	</div>
+	<field name="multichilds" mode="kanban" context="{'default_parent': active_id}">
+<kanban default_order="obsolete"><field name="mailing" /><field name="auth" />
+<field name="parent"/><field name="child"/><field name="child_name"/><field name="email"/><field name="role"/><field name="phone"/><field name="obsolete"/>
+<templates><t t-name="kanban-box"><div t-attf-style="{{record.obsolete.raw_value==1 ? 'background-color:#cccccc':'background-color:#fcfcfc'}}"
+		 t-attf-class="{{record.obsolete.raw_value==1 ? 'oe_kanban_global_click o_res_partner_kanban oe_kanban_card oe_kanban_card_fancy obsolete obshidden':'oe_kanban_global_click o_res_partner_kanban oe_kanban_card oe_kanban_card_fancy current'}}" >
+		<a t-if="!read_only_mode" type="delete" class="fa fa-times pull-right"/>
+		<a t-if="!read_only_mode" type="object" name="toggleobsolete" class="fa fa-clock-o pull-right"/>
+		<a type="object" name="togglemailing" class="fa fa-envelope pull-right" attrs="{'invisible':[('mailing','!=', False)]}"/>
+		<a type="object" name="togglemailing" class="fa fa-envelope-open pull-right" attrs="{'invisible':[('mailing','!=', True)]}"/>
+		<div class="o_kanban_image"><img t-att-src="kanban_image('res.partner', 'image_small', record.child.raw_value)"/></div>
+		<div class="oe_kanban_details"><field name="child" invisible="1"/>
+			<strong class="o_kanban_record_title oe_partner_heading"><a t-att-HREF="'../web#action=103&amp;view_type=form&amp;model=res.partner&amp;id='+record.child.raw_value"><field name="child_name" /></a></strong>
+			<div class="o_kanban_tags_section oe_kanban_partner_categories"/>
+			<ul>
+				<li t-if="record.role.raw_value"><field name="role"/></li>
+				<li t-if="record.phone.raw_value" class="o_text_overflow"><field name="phone"/></li>
+				<li t-if="record.email.raw_value" class="o_text_overflow"><field name="email" widget="email"/></li>
+			</ul>
+		</div><div style="float:right;background-color:#e06666" class="badge" t-if="record.child.user_id">
+			<span t-esc="record.child.user_id" class="o_badge_text" style="padding: 1px 5px;"/></div>
+		<div class="oe_kanban_bottom_right">
+		<!--<a t-if="!read_only_mode and record.obsolete.raw_value==0" type="object" name="copy_from_child" help="copy data from contact" class="fa fa-user-circle pull-right" />-->
+		<a t-if="!read_only_mode and record.obsolete.raw_value==0" type="object" name="copy_from_parent" help="copy data from company" class="fa fa-building pull-right" />
+		<a t-if="record.child.user_id"><span t-esc="record.child.user_id"/></a>
+	</div></div></t></templates></kanban>
+<form><field name="id" invisible="1"/><field name="parent" invisible="1"/><field name="parent_name" invisible="1"/><field name="child_name" invisible="1"/><field name="obsolete" invisible="1"/>
+	<group>
+	<field name="child" placeholder="contact" attrs="{'readonly': [('id','>',0)]}" help="Contact or Child" nolabel="1"/>
+	<field name="role"  placeholder="role"/><br/>
+	<field name="email" placeholder="email"/>
+	<field name="phone" placeholder="phone"/>
+	<field name="address" placeholder="address"/>
+	<field name="mailing"/>
+	<field name="auth"/>
+	</group>
+</form>
+<tree editable="top" no_open="true">
+	<field name="child" attrs="{'readonly': [('id','>',0)]}"/><field name="role"/><field name="email" widget="email"/><field name="phone"/><field name="obsolete" string="Attiva"/>
+	<button name="copy_from_parent" string="&lt;&lt;" type="object" class="btn-primary" help="Copy mail and phone from the company"/>
+</tree></field></page>
+		</xpath>
+	</field>
+</record>
+
+<record id="ees_multiparent.relation_form" model="ir.ui.view">
+	<field name="name">ees_multiparent.relation_form</field>
+	<field name="model">ees_multiparent.relation</field>
+	<field name="view_mode">form</field>
+	<field name="priority">5</field>
+	<field name="arch" type="xml">
+		<form><field name="id" invisible="1"/><field name="parent_name" invisible="1"/><field name="child_name" invisible="1"/><field name="obsolete" invisible="1"/>
+			<group col="3">
+			<field name="parent" placeholder="company" attrs="{'readonly': [('id','>',0)]}" help="Company" nolabel="1"/>				
+			<field name="child" placeholder="contact" attrs="{'readonly': [('id','>',0)]}" help="Contact or Child" nolabel="1"/>
+			<field name="role"  nolabel="1" placeholder="role"/>
+			<field name="email" nolabel="1" placeholder="email"/>
+			<field name="phone" nolabel="1" placeholder="phone"/>
+			<field name="address" nolabel="1" placeholder="address"/>
+			</group>
+		</form>
+	</field>
+</record>
+<record id="ees_multiparent.partner_kanban" model="ir.ui.view">
+	<field name="name">ees_multiparent.partner_kanban</field>
+	<field name="model">res.partner</field>
+	<field name="priority">5</field>
+	<field name="inherit_id" ref="base.res_partner_kanban_view"/>
+	<field name="arch" type="xml">
+		<xpath expr="//templates" position="before">
+			<field name="allkan" /><field name="user_id" />
+		</xpath>
+		<xpath expr="//li[4]" position="before">
+			<t t-if="record.allkan.raw_value"><li style="white-space: pre-wrap;"><p t-raw="record.allkan.raw_value" /></li></t>
+		</xpath>
+		<xpath expr="//li[2]" position="attributes">
+			<attribute name="t-if">(record.is_company.raw_value===true) and !record.parent_id.raw_value and record.function.raw_value</attribute>
+		</xpath>
+		<xpath expr="//li[3]" position="attributes">
+			<attribute name="t-if">(record.is_company.raw_value===true) and record.parent_id.raw_value and record.function.raw_value</attribute>
+		</xpath>
+		<xpath expr="//li[4]" position="attributes">
+			<attribute name="t-if">(record.is_company.raw_value===true) and record.city.raw_value and !record.country_id.raw_value</attribute>
+		</xpath>
+		<xpath expr="//li[5]" position="attributes">
+			<attribute name="t-if">(record.is_company.raw_value===true) and !record.city.raw_value and record.country_id.raw_value</attribute>
+		</xpath>
+		<xpath expr="//li[6]" position="attributes">
+			<attribute name="t-if">(record.is_company.raw_value===true) and record.city.raw_value and record.country_id.raw_value</attribute>
+		</xpath>
+		<xpath expr="//ul" position="after">
+		<div style="float:right;background-color:#e06666" class="badge" >
+			<field name="user_id" class="o_badge_text" style="padding: 1px 5px;"/></div>
+		</xpath>
+	</field>
+</record>
+
+	<!-- PARTNER TREE MODIFICATION - START -->
+<record id="ees_multiparent.partner_select" model="ir.ui.view">
+	<field name="name">ees_multiparent.partner_select</field>
+	<field name="model">res.partner</field>
+	<field name="priority">10</field>
+	<field name="inherit_id" ref="base.view_res_partner_filter" />
+	<field name="arch" type="xml">
+		<field name="parent_id" position="replace">
+			<field name="allkan" domain="[('allkan','ilike',self)]" />
+		</field>
+	</field>
+</record>
+<!-- PARTNER TREE MODIFICATION - END -->
+<!-- BRANDS PARTNER VIEW MODIFICATION - END
+
+t-attf-class="oe_kanban_color_{{kanban_getcolor(record.color.raw_value)}}
+                                                  oe_kanban_global_click_edit oe_semantic_html_override
+                                                  oe_kanban_card {{record.group_fancy==1 ? 'oe_kanban_card_fancy' : ''}}"
+
+-->
+</odoo>
